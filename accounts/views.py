@@ -7,12 +7,34 @@ from .models import *
 
 
 def Home(request):
-    return render(request, 'accounts/dashboard.html')
+    orders = Order.objects.all()
+    customers = Customer.objects.all()
+
+    total_customers = customers.count()
+
+    total_orders = orders.count()
+
+    delivered = orders.filter('Delivered').count()
+    pending = orders.filter('Pending').count()
+
+    context = {'orders': orders, 'customers': customers,
+    'total_orders': total_orders, 'delivered': delivered,
+    'pending': pending}
+    return render(request, 'accounts/dashboard.html', context)
 
 
 def product(request):
     product = Product.objects.all()
     return render(request, 'accounts/product.html', {'products' : product})
 
-def customer(request):
-    return render(request, 'accounts/customer.html')
+def customer(request, pk_test):
+
+    customer = Customer.objects.get(id=pk_test)
+
+    orders = customer.order_set.all()
+
+    order_count = orders.count()
+
+
+    context = {'customer': customer, 'orders': orders, 'order_count': order_count}
+    return render(request, 'accounts/customer.html', context)
